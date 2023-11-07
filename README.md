@@ -1,19 +1,20 @@
-# EV4rent
-an AWS infra for a EV rental service using a mobile apps 
+# EV4rent : Project  Blue Horizons 
+this a POC for building an AWS infra for a EV rental service using a mobile apps 
 
-Project  Blue Horizons 
 
- a future proof infrastructure and services  for Blue SG  EV on demand rental  Services  
-
-  
+ a future proof infrastructure and services  for Blue SG  EV on demand rental  Services  with has those features 
+ A mobile App connecting to a Service to book cars 
+ Iot data streaming to a Server to collect data and react to any issues the driver might have 
+ Aplication access to dev to correct issue and deploy new version of the apps 
+ Business intel for stake holders
+ Alert for maintenance team
+ 
 
 Auth : Doan Nguyen
 Network and Cloud architect, DEvops , SRE , with Data science and  machine learning specialty 
 
 Date 06 november 2023
 Context : job interview
-
-
 
 
 
