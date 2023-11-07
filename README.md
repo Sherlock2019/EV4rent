@@ -1,4 +1,4 @@
-# EV4rent : Project  Blue Horizons 
+# Vehicules 4 rent : Project  Blue Horizons 
 this a POC for building an AWS infra for a EV rental service using a mobile apps 
 
 
