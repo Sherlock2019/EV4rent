@@ -5,7 +5,7 @@ this a POC for building an AWS infra for a EV rental service using a mobile apps
 a future proof infrastructure and services  for Blue SG  EV on demand rental  Services  with has those features : 
 
 * A mobile App connecting to a Service to book cars 
-* Iot data streaming to a Server to collect data and react to any issues the driver might have 
+* iOt  data from EV cars  streaming to a Server to collect data and react to any issues the driver might have 
 * Aplication access to dev to correct issue and deploy new version of the apps 
 * Business intel for stake holders
 * Alert for maintenance team
