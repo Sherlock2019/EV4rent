@@ -1,5 +1,5 @@
 # EV4rent
-an WS infra for a EV rental service using a mobile apps 
+an AWS infra for a EV rental service using a mobile apps 
 
 Project  Blue Horizons 
 
