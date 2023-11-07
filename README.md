@@ -156,5 +156,46 @@ Budget and Resources tools:
 - AWS cost explorer , budget             : To follow up optimize  the cost of the architecture.
 - DevOps Team            : A team of AWS-certified professionals for implementation and maintenance.
 
+### SIZING ###
+
+Scaling an AWS infrastructure to support 1000 electric vehicles (EVs) and 10,000 users involves selecting the right services and resources to handle the load. Here's a high-level overview of the infrastructure components and the rationale behind each choice:
+
+### EV Management Platform:
+- **EC2 Instances**: Use `t3.large` or `m5.large` instances for the application layer, which can handle moderate traffic with the ability to scale. These instances provide a balance between compute, memory, and network resources.
+- **RDS Instance**: Choose `db.r5.large` for PostgreSQL, which offers 2 vCPUs and 16 GiB of memory, suitable for high-performance database needs.
+- **DynamoDB**: Utilize DynamoDB for high-performance, scalable NoSQL database requirements, with auto-scaling enabled to handle throughput dynamically.
+
+### Core Platform:
+- **ECS with Fargate**: Use AWS Fargate for serverless container execution, which abstracts the server management and scales automatically.
+- **API Gateway**: Deploy as the front door to handle HTTPS requests from mobile apps, using rate limiting to manage traffic spikes.
+- **Lambda**: Implement business logic in a serverless manner, allowing for automatic scaling with the number of requests.
+
+### Backend + Monitoring + Data Analytics:
+- **Elasticsearch Service**: For log analytics and real-time monitoring of application performance.
+- **CloudWatch**: For basic monitoring, alarms, and to trigger auto-scaling events.
+- **Redshift**: For data warehousing and analytics, allowing for complex queries on large datasets.
+
+### Terraform and CloudFormation:
+For each platform, you would create Terraform modules and CloudFormation templates that define the resources needed. These IaC (Infrastructure as Code) scripts would include:
+
+- **VPC configuration**: Subnets, NAT Gateways, Route Tables, Internet Gateways, etc.
+- **EC2 Auto Scaling Groups**: To scale the EC2 instances horizontally based on demand.
+- **ECS Task Definitions**: For running containerized applications.
+- **RDS Instances**: With Multi-AZ deployment for high availability.
+- **IAM Roles and Policies**: For secure access management.
+- **Security Groups and NACLs**: For network security.
+- **API Gateway Resources**: For managing APIs.
+- **Lambda Functions**: Including triggers from API Gateway or other AWS services.
+- **DynamoDB Tables**: With auto-scaling settings.
+- **CloudWatch Alarms and Dashboards**: For monitoring.
+- **Elasticsearch Service Setup**: For log analytics.
+- **Redshift Clusters**: For data analytics.
+
+The Terraform modules and CloudFormation templates would be parameterized to allow for customization for different environments like UAT, Staging, and Production.
+
+Creating these Terraform and CloudFormation stacks would require detailed knowledge of each service's configuration options and the specific requirements of BlueSG's platforms. The stacks would be tested in a development environment before being deployed to production.
+
+Please note that the actual instance types and sizes, the database classes, and other resources would need to be fine-tuned based on the specific workload characteristics, which would be determined through load testing and performance analysis.
+
 
 
