@@ -176,7 +176,9 @@ Scaling an AWS infrastructure to support 1000 electric vehicles (EVs) and 10,000
 - **Redshift**: For data warehousing and analytics, allowing for complex queries on large datasets.
 
 
-### Terraform and CloudFormation:
+### deployment using  IAC templates ( terraform or cloudformation ) and CICD git hub actions   
+
+Terraform and CloudFormation:
 For each platform, you would create Terraform modules and CloudFormation templates that define the resources needed. These IaC (Infrastructure as Code) scripts would include:
 
 - **VPC configuration**: Subnets, NAT Gateways, Route Tables, Internet Gateways, etc.
@@ -348,6 +350,137 @@ Before deploying these stacks, you would test them in a development environment.
 ### Parameterization:
 
 For both Terraform and CloudFormation, you would use variables and parameters to customize the stacks for different environments (e.g., UAT, Staging, Production).
+
+
+
+### CICD infra deployement using Git hub actions 
+
+Integrating Terraform with a CI/CD workflow using GitHub Actions allows you to automate the deployment and management of your infrastructure. Here's a scenario where we use GitHub Actions to manage the deployment of AWS infrastructure with Terraform.
+
+In the context of the GitHub Actions workflow described, "Whenever a new commit is pushed to the `main` branch" refers to any new commit that is made to the `main` branch of the GitHub repository, regardless of the content. This could be:
+
+- A commit containing application code changes made by a developer.
+- A commit containing changes to Terraform configuration files.
+- A merge commit from a pull request that includes changes from feature branches.
+
+The CI/CD pipeline does not differentiate between the types of commits; it triggers the workflow for any new commit to the `main` branch. However, in practice, you might want to structure your repositories such that:
+
+- Infrastructure code managed by Terraform is kept in a separate repository or a distinct directory within a repository that contains only Terraform configuration files.
+- Application code is kept in a separate repository or directory if it's in the same repository.
+
+This separation helps to manage and maintain clear boundaries between infrastructure and application code changes. It also allows you to set up specific CI/CD workflows for each type of change. For example, you might have one workflow for application code that runs tests and deploys the application, and another workflow for infrastructure code that runs `terraform plan` and `terraform apply`.
+
+If you want to trigger the Terraform workflow only when Terraform files are changed, you can modify the `on` section of the workflow file to include path filters:
+
+```yaml
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '**.tf'
+      - '**.tfvars'
+```
+
+With this configuration, the workflow will only run when files with the `.tf` or `.tfvars` extensions are changed, which are typically associated with Terraform configurations.
+
+### Scenario:
+
+Whenever a new commit is pushed to the `main` branch, we want to:
+
+1. Initialize Terraform.
+2. Format and validate Terraform code.
+3. Plan the Terraform deployment and show the proposed changes.
+4. Apply the Terraform deployment automatically if the commit is tagged with a release.
+
+### GitHub Actions Workflow:
+
+Create a `.github/workflows/terraform.yml` file in your repository with the following content:
+
+```yaml
+name: 'Terraform CI/CD'
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - 'v*'
+
+jobs:
+  terraform:
+    name: 'Terraform'
+    runs-on: ubuntu-latest
+
+    # Environment variables can be set here or in the GitHub repository settings
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_DEFAULT_REGION: 'us-east-1'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v1
+
+      - name: Terraform Initialize
+        id: init
+        run: terraform init
+
+      - name: Terraform Format
+        id: fmt
+        run: terraform fmt -check
+
+      - name: Terraform Validate
+        id: validate
+        run: terraform validate
+
+      - name: Terraform Plan
+        id: plan
+        run: terraform plan
+
+      # This step will only run if the commit is tagged for release
+      - name: Terraform Apply
+        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+        run: terraform apply -auto-approve
+```
+
+### Explanation:
+
+- **on:** This section defines the trigger for the workflow. It will run on pushes to the `main` branch and any tags that start with `v`, which are typically used for versioning releases.
+
+- **jobs:** Defines the job called `terraform` that runs on an Ubuntu latest runner.
+
+- **env:** Sets the environment variables for AWS credentials. These should be stored as secrets in your GitHub repository settings to keep them secure.
+
+- **steps:** The sequence of steps that the job will execute.
+
+  - **Checkout code:** Checks out the repository code so that it can be used by the workflow.
+  
+  - **Setup Terraform:** Sets up Terraform CLI in the GitHub Actions runner.
+  
+  - **Terraform Initialize:** Initializes a new or existing Terraform working directory.
+  
+  - **Terraform Format:** Checks that all Terraform configuration files adhere to a canonical format.
+  
+  - **Terraform Validate:** Validates the Terraform files for correctness.
+  
+  - **Terraform Plan:** Creates an execution plan, which lets you preview the changes that Terraform plans to make to your infrastructure.
+  
+  - **Terraform Apply:** Applies the changes to reach the desired state of the configuration. This step is conditional and only runs if the push event is a tagged commit, which helps prevent unintended deployments.
+
+### Security Considerations:
+
+- Store your AWS credentials (`AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`) as encrypted secrets in your GitHub repository settings.
+- Ensure that the IAM user associated with these credentials has the minimum necessary permissions for the actions Terraform needs to perform.
+- Review Terraform plans carefully before applying, especially in production environments.
+- Consider implementing additional approval steps or manual triggers for sensitive operations.
+
+This workflow provides a basic example of how to integrate Terraform with GitHub Actions for CI/CD. Depending on your organization's needs, you might want to expand this with manual approval steps, more granular triggers, or different workflows for different environments.
+
+
 
 ### Observability and Monitoring:
 
