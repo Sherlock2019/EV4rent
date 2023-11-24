@@ -14,8 +14,8 @@ a future proof infrastructure and services    EV on demand rental  Services  wit
 Auth : Doan Nguyen
 Network and Cloud architect, DEvops , SRE , with Data science and  machine learning specialty 
 
-Date 06 november 2023
-Context : job interview
+
+
 
 
 
